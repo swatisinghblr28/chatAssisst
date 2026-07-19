@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hotel Assistant</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 640px; margin: 40px auto; background: #f7f7f8; }
+  h2 { color: #1f3864; }
+  #chat { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; height: 420px; overflow-y: auto; }
+  .msg { margin: 10px 0; line-height: 1.4; }
+  .user { text-align: right; color: #1f3864; }
+  .bot { text-align: left; color: #222; }
+  .sources { font-size: 12px; color: #888; margin-top: 4px; }
+  #input-row { display: flex; margin-top: 12px; gap: 8px; }
+  #query { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+  button { padding: 10px 16px; border: none; border-radius: 6px; background: #1f3864; color: #fff; cursor: pointer; }
+  button:disabled { opacity: 0.5; }
+</style>
+</head>
+<body>
+  <h2>🏨 Hotel Assistant</h2>
+  <p style="font-size:12px;"><a href="/admin" style="color:#1f3864;">Upload documents (admin) →</a></p>
+  <div id="chat"></div>
+  <div id="input-row">
+    <input id="query" type="text" placeholder="Ask about check-in, amenities, policies..." />
+    <button id="send">Send</button>
+  </div>
+
+<script>
+const chatEl = document.getElementById("chat");
+const queryEl = document.getElementById("query");
+const sendBtn = document.getElementById("send");
+
+function addMessage(text, cls, sources) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.textContent = text;
+  chatEl.appendChild(div);
+  if (sources && sources.length) {
+    const src = document.createElement("div");
+    src.className = "sources";
+    src.textContent = "Sources: " + sources.map(s => `[${s.index}] ${s.source}`).join(", ");
+    chatEl.appendChild(src);
+  }
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+async function send() {
+  const query = queryEl.value.trim();
+  if (!query) return;
+  addMessage(query, "user");
+  queryEl.value = "";
+  sendBtn.disabled = true;
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      addMessage(data.answer, "bot", data.sources);
+    } else {
+      addMessage("Error: " + (data.detail || "something went wrong"), "bot");
+    }
+  } catch (e) {
+    addMessage("Error contacting server: " + e.message, "bot");
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener("click", send);
+queryEl.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+</script>
+</body>
+</html>
