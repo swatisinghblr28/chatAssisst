@@ -67,3 +67,19 @@ async def status():
 @router.get("/documents")
 async def list_documents():
     return {"documents": keyword_search.list_documents()}
+
+
+@router.delete("/documents")
+async def clear_documents():
+    """Wipe all ingested data: vector store, BM25 corpus, and saved upload files."""
+    try:
+        vector_store.reset()
+        keyword_search.clear_corpus()
+        for fname in os.listdir(DOCUMENTS_DIR):
+            fpath = os.path.join(DOCUMENTS_DIR, fname)
+            if os.path.isfile(fpath):
+                os.remove(fpath)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Reset failed: {e}")
+
+    return {"status": "cleared"}

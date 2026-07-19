@@ -182,6 +182,21 @@
     cursor: not-allowed;
   }
 
+  #clear-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 5px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  #clear-btn:hover { background: rgba(162, 59, 59, 0.08); }
+  #clear-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
   #selected-file {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
@@ -350,7 +365,10 @@
 
   <div class="ledger-header">
     <h2>Ledger</h2>
-    <span class="count" id="ledger-count"></span>
+    <div style="display:flex; align-items:baseline; gap:14px;">
+      <span class="count" id="ledger-count"></span>
+      <button id="clear-btn" type="button">Clear all data</button>
+    </div>
   </div>
 
   <table>
@@ -485,6 +503,37 @@ submitBtn.addEventListener('click', async () => {
 });
 
 loadLedger();
+
+const clearBtn = document.getElementById('clear-btn');
+clearBtn.addEventListener('click', async () => {
+  const confirmed = confirm(
+    'This will permanently delete every ingested document, the vector index, ' +
+    'and the keyword search index. This cannot be undone. Continue?'
+  );
+  if (!confirmed) return;
+
+  clearBtn.disabled = true;
+  statusLine.className = '';
+  statusLine.textContent = 'Clearing all data...';
+
+  try {
+    const res = await fetch('/api/documents', { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok) {
+      statusLine.className = 'ok';
+      statusLine.textContent = 'All data cleared. Ready for a new upload.';
+      loadLedger();
+    } else {
+      statusLine.className = 'err';
+      statusLine.textContent = 'Error: ' + (data.detail || 'clear failed');
+    }
+  } catch (e) {
+    statusLine.className = 'err';
+    statusLine.textContent = 'Error contacting server: ' + e.message;
+  } finally {
+    clearBtn.disabled = false;
+  }
+});
 </script>
 </body>
 </html>

@@ -39,3 +39,10 @@ def query(embedding: list[float], top_k: int) -> list[dict]:
 
 def count() -> int:
     return _collection.count()
+
+
+def reset() -> None:
+    """Drop and recreate the collection — wipes all vectors."""
+    global _collection
+    _client.delete_collection(name=CHROMA_COLLECTION)
+    _collection = _client.get_or_create_collection(name=CHROMA_COLLECTION)

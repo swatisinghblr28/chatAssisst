@@ -6,7 +6,7 @@ import os
 
 # --- Ollama ---
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemma:2b")          # try "qwen2.5:7b-instruct" as an alternative
+LLM_MODEL = os.getenv("LLM_MODEL", "gemma2:2b")            # confirm your exact tag with `ollama list` — could be "gemma:2b" instead
 EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
 
 # --- Chunking ---

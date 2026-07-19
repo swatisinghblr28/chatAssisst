@@ -29,6 +29,13 @@ def append_to_corpus(records: list[dict]) -> None:
         json.dump(corpus, f)
 
 
+def clear_corpus() -> None:
+    """Wipe the BM25 corpus file — used by the admin 'clear all data' action."""
+    os.makedirs(os.path.dirname(CORPUS_PATH), exist_ok=True)
+    with open(CORPUS_PATH, "w", encoding="utf-8") as f:
+        json.dump([], f)
+
+
 def list_documents() -> list[dict]:
     """Group the flat chunk corpus by source file for display purposes."""
     corpus = _load_corpus()
