@@ -37,9 +37,16 @@ function addMessage(text, cls, sources) {
   div.textContent = text;
   chatEl.appendChild(div);
   if (sources && sources.length) {
+    const bySource = new Map();
+    for (const s of sources) {
+      if (!bySource.has(s.source)) bySource.set(s.source, []);
+      bySource.get(s.source).push(s.index);
+    }
     const src = document.createElement("div");
     src.className = "sources";
-    src.textContent = "Sources: " + sources.map(s => `[${s.index}] ${s.source}`).join(", ");
+    src.textContent = "Sources: " + Array.from(bySource, ([source, idxs]) =>
+      `[${idxs.join(",")}] ${source}`
+    ).join(", ");
     chatEl.appendChild(src);
   }
   chatEl.scrollTop = chatEl.scrollHeight;
