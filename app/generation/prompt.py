@@ -1,7 +1,3 @@
-"""
-Prompt construction. Kept separate from llm.py so tone/persona can
-become per-tenant config in phase 2 without touching the LLM call code.
-"""
 
 SYSTEM_PROMPT = """You are a helpful hotel guest assistant. Answer the guest's \
 question using ONLY the information in the provided context. Do not use \

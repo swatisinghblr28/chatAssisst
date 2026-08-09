@@ -3,11 +3,19 @@ Central configuration for the Hotel RAG MVP.
 Change model names / paths here as you tune the system.
 """
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- Ollama ---
+# OLLAMA_HOST and EMBED_MODEL stay active: embedder.py still uses Ollama for embeddings
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemma2:2b")            # confirm your exact tag with `ollama list` — could be "gemma:2b" instead
+# LLM_MODEL = os.getenv("LLM_MODEL", "gemma:2b")            # confirm your exact tag with `ollama list` — could be "gemma:2b" instead
 EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
+
+# --- OpenAI ---
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 # --- Chunking ---
 CHUNK_SIZE = 500          # characters per chunk (tune based on your docs)

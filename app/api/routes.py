@@ -49,7 +49,7 @@ async def chat(request: ChatRequest):
     try:
         answer = generate_answer(request.query, chunks)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Generation failed (is Ollama running with the model pulled?): {e}")
+        raise HTTPException(status_code=500, detail=f"Generation failed (check OPENAI_API_KEY and that the model in app/config.py is valid): {e}")
 
     sources = [
         {"index": i + 1, "source": c.get("metadata", {}).get("source", "unknown"), "text": c["text"]}

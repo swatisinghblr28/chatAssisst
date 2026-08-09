@@ -3,9 +3,10 @@ Wraps the local, persistent ChromaDB collection.
 Everything lives on disk under data/index/chroma — no server to run.
 """
 import chromadb
+from chromadb.config import Settings
 from app.config import CHROMA_DIR, CHROMA_COLLECTION
 
-_client = chromadb.PersistentClient(path=CHROMA_DIR)
+_client = chromadb.PersistentClient(path=CHROMA_DIR, settings=Settings(anonymized_telemetry=False))
 _collection = _client.get_or_create_collection(name=CHROMA_COLLECTION)
 
 
